@@ -1,0 +1,1 @@
+[{"input":"9\nabacbecfd","output":"YES\n001010101"},{"input":"8\naaabbcbb","output":"YES\n01011011"},{"input":"7\nabcdedc","output":"NO"},{"input":"5\nabcde","output":"YES\n00000"}]
