@@ -1,0 +1,76 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define int long long
+#define all(x) (x).begin(),(x).end()
+#define sz(x) (int)(x).size()
+const long double EPS = 1e-14;
+const int maxn = 100500;
+const int mod = 1e9 + 7;
+int pw[101];
+
+struct Math{
+    private: long long f[maxn];
+    public:
+    Math(){f[0] = 0;};
+    long long add(long long x, long long y) { 
+        x += y;
+        if(x >= mod) x -= mod;
+        if(x < 0) x += mod;
+        return x;
+    }
+    long long mul(long long x, long long y) { return (add(x, mod) * add(y, mod)) % mod; }
+    long long fast_pow(long long n, long long k){
+            if(k == 0) return 1LL;
+            long long ans = fast_pow(n, k >> 1);
+            ans = mul(ans, ans);
+            if(k & 1) ans = mul(n, ans);
+            return ans;
+    }
+    long long inv(long long x) { return fast_pow(x, mod - 2); }
+    void init_fact(){
+        f[0] = 1LL;
+        for(int i = 1 ; i < maxn ; ++i)
+            f[i] = mul(i, f[i - 1]);
+    }
+    long long fact(int x){
+        assert(x >= 0 && x < maxn);
+        if(!f[0]) init_fact();
+        return f[x];
+    };
+}math;
+
+int calc(map < int, int > cnt, int n){
+    int ans = 0;
+    for(auto x : cnt){
+        if(!x.second) continue;
+        int size = math.fact(n - 1);
+        for(auto y : cnt)
+            size = math.mul(size, math.inv(math.fact(y.second - (y == x))));
+        for(int i = 0 ; i < n ; ++i)
+            ans = math.add(ans, math.mul(math.mul(x.first, pw[i]), size));
+    }
+    return ans;
+}
+
+signed main(){
+    ios::sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    int n;
+    cin >> n;
+    pw[0] = 1;
+    for(int i = 1 ; i < n + 5 ; ++i)
+        pw[i] = math.mul(pw[i - 1], 10);
+    map < int, int > cnt;
+    for(int i = 0 ; i < n ; ++i){
+        int x;
+        cin >> x;
+        cnt[x]++;
+    }
+    int ans = calc(cnt, n);
+    if(cnt.count(0)){
+        cnt[0]--;
+        ans = math.add(ans, -calc(cnt, n - 1));
+    }
+    cout << ans << '\n';
+    return 0;
+}
